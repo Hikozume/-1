@@ -1,17 +1,16 @@
 import aiohttp
 from bs4 import BeautifulSoup
-import pyodbc
 from car import Car
 import fake_useragent
+from datebase import DateBase
 
 
-connection_to_db = pyodbc.connect(r'Driver={SQL Server};Server=SRV2;Database=Auto;Trusted_Connection=yes;')
-cursor = connection_to_db.cursor()
 links = []
 wheelDrives = ["4WD", "передний", "задний"]
 transmissions = ["автомат", "АКПП", "робот", "вариатор", "механика"]
 fuelTypes = ["бензин", "дизель", "электро", "гибрид", "ГБО"]
 lst = ['Aston Martin', 'Land Rover', 'Alfa Romeo', 'DW Hower', 'Great Wall', 'Iran Khodro']
+datebase = DateBase('DESKTOP-SI0JD8G', 'Auto')
 
 
 async def parse(price1, price2, limitprice, step=2000):
@@ -25,8 +24,8 @@ async def parse(price1, price2, limitprice, step=2000):
                 request = await resp.text()
         soup = BeautifulSoup(request, 'lxml')
         if soup.find(class_='css-1173kvb eaczv700') is None:
-            if price2 == limitprice:
-                break
+            if price2 >= limitprice:
+                return
             page = 1
             price1 = price2 + 1
             price2 += step
@@ -81,10 +80,8 @@ async def parse(price1, price2, limitprice, step=2000):
                 car.price = price_of_car
                 car.image = el.find(class_='css-11n001v e1e9ee560').find('img')['data-src']
                 car.location = el.find(class_='css-1mj3yjd e162wx9x0').text
-                query = "INSERT INTO dbo.Autos (Mark, Model, Year, Link, EngineCapacity, EnginePower, FuelType, Transmission, DriveWheels,Milage, Price, Image, Location) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?);"
                 values = car.mark, car.model, car.year, car.link, car.engineCapacity, car.power, car.fuelType, car.transmission, car.driveWheels, car.milage, car.price,car.image, car.location
-                cursor.execute(query, values)
-                connection_to_db.commit()
+                datebase.add_record('Auto', values)
                 print(car.link)
                 car = None
         page += 1
