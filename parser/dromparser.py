@@ -78,7 +78,12 @@ async def parse(price1, price2, limitprice, step=2000):
                 price_of_car = el.find('span', class_='css-byj1dh e162wx9x0').text.split()
                 price_of_car = int(''.join(price_of_car[:len(price_of_car)-1]))
                 car.price = price_of_car
-                car.image = el.find(class_='css-11n001v e1e9ee560').find('img')['data-src']
+                try:
+                    images_str = el.find(class_='css-11n001v e1e9ee560').find('img')['data-srcset']
+                    images = images_str.split(',')
+                    car.image = images[1].split()[0]
+                except:
+                    car.image = el.find(class_='css-11n001v e1e9ee560').find('img')['data-src']
                 car.location = el.find(class_='css-1mj3yjd e162wx9x0').text
                 values = car.mark, car.model, car.year, car.link, car.engineCapacity, car.power, car.fuelType, car.transmission, car.driveWheels, car.milage, car.price,car.image, car.location
                 datebase.add_record('Auto', values)

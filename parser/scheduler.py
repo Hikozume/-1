@@ -7,7 +7,7 @@ def job():
     os.system('python main.py')
 
 
-schedule.every().day.at("10:30").do(job)
+schedule.every().day.at("23:33").do(job)
 
 
 while 1:
