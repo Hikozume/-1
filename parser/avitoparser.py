@@ -2,13 +2,13 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-import cfscrape
 from car import Car
-import pyodbc
+from datebase import DateBase
+import cfscrape
 
 
-connection_to_db = pyodbc.connect(r'Driver={SQL Server};Server=SRV2;Database=Auto;Trusted_Connection=yes;')
-cursor = connection_to_db.cursor()
+
+datebase = DateBase('DESKTOP-SI0JD8G', 'Auto')
 scraper = cfscrape.create_scraper()
 transmissionTypes = ['AT', 'MT']
 driveWheel_types = [' передний', ' задний', ' полный']
@@ -17,12 +17,12 @@ links = []
 lst = ['Aston Martin', 'Land Rover', 'Alfa Romeo', 'DW Hower', 'Great Wall', 'Iran Khodro']
 
 
-def parse_avito(price1, price2, limitprice):
+async def parse_avito(price1, price2, limitprice, step=2000):
     page = 1
     while True:
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-blink-features=AutomationControlled")
-        driver = webdriver.Chrome(r"C:\Users\stud0000228577\Desktop\chromedriver.exe", options=options)
+        driver = webdriver.Chrome(r"C:\Users\HENNESSY-\Desktop\chromedriver.exe", options=options)
         default_url = 'https://www.avito.ru/rossiya/avtomobili?cd=1&f=ASgBAQICAUTyCrCKAQFA9sQNFL6wOg'
         driver.get(default_url)
         time.sleep(2)
@@ -34,18 +34,17 @@ def parse_avito(price1, price2, limitprice):
         url = driver.current_url
         driver.close()
         for i in range(1, 101):  #проверить переход по страницам, ощущение будто фильтры меняются быстрее чем скрипт ободйет все результаты
-            request = scraper.get(url+f'&p={i}')
+            request = scraper.get(url+f"&p={i}")
             print(f'[INFO] {url+f"&p={i}"}')
-            request.encoding = 'utf-8'
-            soup = BeautifulSoup(request.text, 'lxml')
             print(request.status_code)
+            soup = BeautifulSoup(request.text, 'lxml')
             items_list = soup.find(class_='items-items-kAJAg')
             if items_list.text == '':
                 if price2 == limitprice:
-                    break
+                    return
                 page = 1
                 price1 = price2 + 1
-                price2 += 2000
+                price2 += step
                 print(f'{price1} - {price2}')
                 break
             else:
@@ -97,14 +96,8 @@ def parse_avito(price1, price2, limitprice):
                     locationAddress = el.find(class_='geo-address-fhHd0 text-text-LurtD text-size-s-BxGpL').text.split(',')
                     car.location = locationAddress[len(locationAddress)-1]
                     car.image = el.find('li')['data-marker'].split('-')[2]
-                    query = "INSERT INTO dbo.Autos (Mark, Model, Year, Link, EngineCapacity, EnginePower, FuelType, Transmission, DriveWheels,Milage, Price, Image, Location) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?);"
                     values = car.mark, car.model, car.year, car.link, car.engineCapacity, car.power, car.fuelType, car.transmission, car.driveWheels, car.milage, car.price, car.image, car.location
-                    cursor.execute(query, values)
-                    connection_to_db.commit()
+                    datebase.add_record('Auto', values)
                     print(car.link)
                     car = None
             page += 1
-
-
-
-parse_avito(10000,15000,300000)
