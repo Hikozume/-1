@@ -1,11 +1,10 @@
 import asyncio
 from dromparser import parse
-from avitoparser import parse_avito
 from datebase import DateBase
 
 
 
-datebase = DateBase('DESKTOP-SI0JD8G', 'Auto')
+datebase = DateBase(r'Autos.db')
 datebase.clear_table('Auto')
 print('[INFO] Очистил таблицу')
 main_loop = asyncio.get_event_loop()

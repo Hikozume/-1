@@ -10,7 +10,7 @@ wheelDrives = ["4WD", "передний", "задний"]
 transmissions = ["автомат", "АКПП", "робот", "вариатор", "механика"]
 fuelTypes = ["бензин", "дизель", "электро", "гибрид", "ГБО"]
 lst = ['Aston Martin', 'Land Rover', 'Alfa Romeo', 'DW Hower', 'Great Wall', 'Iran Khodro']
-datebase = DateBase('DESKTOP-SI0JD8G', 'Auto')
+datebase = DateBase(r'Autos.db')
 
 
 async def parse(price1, price2, limitprice, step=2000):
