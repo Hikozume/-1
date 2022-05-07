@@ -7,7 +7,7 @@ def job():
     os.system('python main.py')
 
 
-schedule.every().day.at("14:54").do(job)
+schedule.every().day.at("14:54").do(job) #парсинг по расписанию в 14:54 каждого дня будет запускаться скрипт main,py
 
 
 while 1:

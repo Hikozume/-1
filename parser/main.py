@@ -7,7 +7,7 @@ from datebase import DateBase
 datebase = DateBase(r'Autos.db')
 datebase.clear_table('Auto')
 print('[INFO] Очистил таблицу')
-main_loop = asyncio.get_event_loop()
+main_loop = asyncio.get_event_loop() #получаем цикл задач и заполняем ее задачами вызовом методов парсинга с разными ценовыми диапазаномаи, асинхронно
 tasks = [
             main_loop.create_task(parse(10000, 20000, 1000000)),
             main_loop.create_task(parse(1000000, 1002000, 2000000))]

@@ -1,6 +1,6 @@
 import sqlite3
 
-
+#класс работы с бд, с методами очистить таблицу, добавить запись, создать таблицу
 class DateBase:
     connection_to_db = None
     cursor = None

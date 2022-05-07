@@ -10,19 +10,19 @@ wheelDrives = ["4WD", "передний", "задний"]
 transmissions = ["автомат", "АКПП", "робот", "вариатор", "механика"]
 fuelTypes = ["бензин", "дизель", "электро", "гибрид", "ГБО"]
 lst = ['Aston Martin', 'Land Rover', 'Alfa Romeo', 'DW Hower', 'Great Wall', 'Iran Khodro']
-datebase = DateBase(r'Autos.db')
+datebase = DateBase(r'Autos.db') #создаем объект класса database
 
 
-async def parse(price1, price2, limitprice, step=2000):
+async def parse(price1, price2, limitprice, step=2000): #функция для парсинга со входными данными, начальная цена, конечная цена, лимит и шаг
     page = 1
     while True:
         url = f'https://auto.drom.ru/all/page{page}/?minprice={price1}&maxprice={price2}&damaged=2&unsold=1&ph=1'
-        user = fake_useragent.UserAgent().random
+        user = fake_useragent.UserAgent().random #рандомные юзер агенты для запросов
         headers = {'user-agent': user}
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as resp:
                 request = await resp.text()
-        soup = BeautifulSoup(request, 'lxml')
+        soup = BeautifulSoup(request, 'lxml') #далее обращаясь к объекту BS находим нужные нам элементу по тегу и классу
         if soup.find(class_='css-1173kvb eaczv700') is None:
             if price2 >= limitprice:
                 return
@@ -86,7 +86,7 @@ async def parse(price1, price2, limitprice, step=2000):
                     car.image = el.find(class_='css-11n001v e1e9ee560').find('img')['data-src']
                 car.location = el.find(class_='css-1mj3yjd e162wx9x0').text
                 values = car.mark, car.model, car.year, car.link, car.engineCapacity, car.power, car.fuelType, car.transmission, car.driveWheels, car.milage, car.price,car.image, car.location
-                datebase.add_record('Auto', values)
+                datebase.add_record('Auto', values) #записываем в базу объявление
                 print(car.link)
                 car = None
         page += 1

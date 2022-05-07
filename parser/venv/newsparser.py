@@ -10,8 +10,8 @@ connection_to_db = pyodbc.connect(r'Driver={SQL Server};Server=DESKTOP-SI0JD8G;D
 cursor = connection_to_db.cursor()
 links = []
 
-
-def update_main_page():
+#парсинг новостей,
+def update_main_page(): #обновляем страницу, чтобы проверить не появились ли новые обяъвления, записываем их в список и передаем в метод parse_page
     url = 'https://www.autonews.ru/tags/?tag=%D0%9D%D0%BE%D0%B2%D0%BE%D1%81%D1%82%D0%B8'
     request = requests.get(url)
     print(request.status_code)
@@ -33,7 +33,7 @@ def update_main_page():
     return news
 
 
-def parse_page(news):
+def parse_page(news): #открываем страницу из списка полученного, получаем необходимые данные и записываем в БД
     for el in news:
         request = requests.get(el['link'])
         print(request.status_code)

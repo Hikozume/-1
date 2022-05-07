@@ -1,5 +1,5 @@
 from datebase import DateBase
-
+#создание таблиц sqlite
 
 datebase = DateBase('Autos.db')
 first_query = '''CREATE TABLE News(
